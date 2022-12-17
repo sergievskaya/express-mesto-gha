@@ -20,7 +20,7 @@ module.exports.getUserById = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Не валидный id', ...err });
+        res.status(400).send({ message: 'Не валидный id пользователя', ...err });
       } else if (err.message === 'not found') {
         res.status(404).send({ message: 'Пользователь с указанным id не найден' });
       } else {
@@ -39,6 +39,68 @@ module.exports.createUser = (req, res) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Ошибка валидации полей', ...err });
+      } else {
+        res.status(500).send({ message: 'Ошибка на сервере' });
+      }
+    });
+};
+
+module.exports.updateUserInfo = (req, res) => {
+  const userId = req.user._id;
+  const { name, about } = req.body;
+
+  User.findByIdAndUpdate(
+    userId,
+    { name, about },
+    {
+      new: true,
+      runValidators: true,
+    },
+  )
+    .then((user) => {
+      if (!user) {
+        throw new Error('not found');
+      }
+      res.status(200).send(user);
+    })
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: 'Ошибка валидации полей', ...err });
+      } else if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Не валидный id пользователя', ...err });
+      } else if (err.message === 'not found') {
+        res.status(404).send({ message: 'Пользователь с указанным id не найден' });
+      } else {
+        res.status(500).send({ message: 'Ошибка на сервере' });
+      }
+    });
+};
+
+module.exports.updateAvatar = (req, res) => {
+  const userId = req.user._id;
+  const { avatar } = req.body;
+
+  User.findByIdAndUpdate(
+    userId,
+    { avatar },
+    {
+      new: true,
+      runValidators: true,
+    },
+  )
+    .then((user) => {
+      if (!user) {
+        throw new Error('not found');
+      }
+      res.status(200).send(user);
+    })
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: 'Ошибка валидации полей', ...err });
+      } else if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Не валидный id пользователя', ...err });
+      } else if (err.message === 'not found') {
+        res.status(404).send({ message: 'Пользователь с указанным id не найден' });
       } else {
         res.status(500).send({ message: 'Ошибка на сервере' });
       }

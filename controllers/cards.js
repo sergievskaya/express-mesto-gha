@@ -36,7 +36,7 @@ module.exports.deleteCardById = (req, res) => {
         throw new Error('forbidden');
       } else {
         card.remove();
-        res.status(200).send({ message: 'Карточка удалена' });
+        res.status(200).send({ message: 'Пост удалён' });
       }
     })
     .catch((err) => {
@@ -46,6 +46,52 @@ module.exports.deleteCardById = (req, res) => {
         res.status(404).send({ message: 'Карточка с указанным id не найдена' });
       } else if (err.message === 'forbidden') {
         res.status(403).send({ message: 'Можно удалять только собственные посты' });
+      } else {
+        res.status(500).send({ message: 'Ошибка на сервере' });
+      }
+    });
+};
+
+module.exports.likeCard = (req, res) => {
+  Card.findByIdAndUpdate(
+    req.params.cardId,
+    { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
+    { new: true },
+  )
+    .then((card) => {
+      if (!card) {
+        throw new Error('not found');
+      }
+      res.status(200).send(card);
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Не валидный id', ...err });
+      } else if (err.message === 'not found') {
+        res.status(404).send({ message: 'Карточка с указанным id не найдена' });
+      } else {
+        res.status(500).send({ message: 'Ошибка на сервере' });
+      }
+    });
+};
+
+module.exports.dislikeCard = (req, res) => {
+  Card.findByIdAndUpdate(
+    req.params.cardId,
+    { $pull: { likes: req.user._id } }, // убрать _id из массива
+    { new: true },
+  )
+    .then((card) => {
+      if (!card) {
+        throw new Error('not found');
+      }
+      res.status(200).send(card);
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Не валидный id', ...err });
+      } else if (err.message === 'not found') {
+        res.status(404).send({ message: 'Карточка с указанным id не найдена' });
       } else {
         res.status(500).send({ message: 'Ошибка на сервере' });
       }
