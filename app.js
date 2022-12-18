@@ -23,6 +23,10 @@ app.use((req, res, next) => {
 app.use(routerUsers);
 app.use(routerCards);
 
+app.use('*', (req, res) => {
+  res.status(404).send({ message: 'Ресурс не найден. Проверьте URL и метод запроса' });
+});
+
 app.listen(PORT, () => {
   console.log(`Server listen port ${PORT}`);
 });
