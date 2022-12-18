@@ -1,11 +1,17 @@
 const User = require('../models/user');
+const {
+  STATUS_CREATED,
+  STATUS_BAD_REQUEST,
+  STATUS_NOT_FOUND,
+  STATUS_INTERNAL_SERVER_ERROR,
+} = require('../utils/constants');
 
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => {
-      res.status(200).send(users);
+      res.send(users);
     })
-    .catch(() => res.status(500).send({ message: 'Ошибка на сервере' }));
+    .catch(() => res.status(STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Ошибка на сервере' }));
 };
 
 module.exports.getUserById = (req, res) => {
@@ -16,15 +22,15 @@ module.exports.getUserById = (req, res) => {
       if (!user) {
         throw new Error('not found');
       }
-      res.status(200).send(user);
+      res.send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Не валидный id пользователя', ...err });
+        res.status(STATUS_BAD_REQUEST).send({ message: 'Не валидный id пользователя' });
       } else if (err.message === 'not found') {
-        res.status(404).send({ message: 'Пользователь с указанным id не найден' });
+        res.status(STATUS_NOT_FOUND).send({ message: 'Пользователь с указанным id не найден' });
       } else {
-        res.status(500).send({ message: 'Ошибка на сервере' });
+        res.status(STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Ошибка на сервере' });
       }
     });
 };
@@ -34,13 +40,13 @@ module.exports.createUser = (req, res) => {
 
   User.create({ name, about, avatar })
     .then((user) => {
-      res.status(201).send(user);
+      res.status(STATUS_CREATED).send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Ошибка валидации полей', ...err });
+        res.status(STATUS_BAD_REQUEST).send({ message: 'Ошибка валидации полей' });
       } else {
-        res.status(500).send({ message: 'Ошибка на сервере' });
+        res.status(STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Ошибка на сервере' });
       }
     });
 };
@@ -61,17 +67,17 @@ module.exports.updateUserInfo = (req, res) => {
       if (!user) {
         throw new Error('not found');
       }
-      res.status(200).send(user);
+      res.send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Ошибка валидации полей', ...err });
+        res.status(STATUS_BAD_REQUEST).send({ message: 'Ошибка валидации полей' });
       } else if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Не валидный id пользователя', ...err });
+        res.status(STATUS_BAD_REQUEST).send({ message: 'Не валидный id пользователя' });
       } else if (err.message === 'not found') {
-        res.status(404).send({ message: 'Пользователь с указанным id не найден' });
+        res.status(STATUS_NOT_FOUND).send({ message: 'Пользователь с указанным id не найден' });
       } else {
-        res.status(500).send({ message: 'Ошибка на сервере' });
+        res.status(STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Ошибка на сервере' });
       }
     });
 };
@@ -92,17 +98,17 @@ module.exports.updateAvatar = (req, res) => {
       if (!user) {
         throw new Error('not found');
       }
-      res.status(200).send(user);
+      res.send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Ошибка валидации полей', ...err });
+        res.status(STATUS_BAD_REQUEST).send({ message: 'Ошибка валидации полей' });
       } else if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Не валидный id пользователя', ...err });
+        res.status(STATUS_BAD_REQUEST).send({ message: 'Не валидный id пользователя' });
       } else if (err.message === 'not found') {
-        res.status(404).send({ message: 'Пользователь с указанным id не найден' });
+        res.status(STATUS_NOT_FOUND).send({ message: 'Пользователь с указанным id не найден' });
       } else {
-        res.status(500).send({ message: 'Ошибка на сервере' });
+        res.status(STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Ошибка на сервере' });
       }
     });
 };

@@ -1,11 +1,18 @@
 const Card = require('../models/card');
+const {
+  STATUS_CREATED,
+  STATUS_BAD_REQUEST,
+  STATUS_NOT_FOUND,
+  STATUS_INTERNAL_SERVER_ERROR,
+  STATUS_FORBIDDEN,
+} = require('../utils/constants');
 
 module.exports.getCards = (req, res) => {
   Card.find({})
     .then((cards) => {
-      res.status(200).send(cards);
+      res.send(cards);
     })
-    .catch(() => res.status(500).send({ message: 'Ошибка на сервере' }));
+    .catch(() => res.status(STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Ошибка на сервере' }));
 };
 
 module.exports.createCard = (req, res) => {
@@ -14,13 +21,13 @@ module.exports.createCard = (req, res) => {
 
   Card.create({ name, link, owner })
     .then((card) => {
-      res.status(201).send(card);
+      res.status(STATUS_CREATED).send(card);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Ошибка валидации полей', ...err });
+        res.status(STATUS_BAD_REQUEST).send({ message: 'Ошибка валидации полей' });
       } else {
-        res.status(500).send({ message: 'Ошибка на сервере' });
+        res.status(STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Ошибка на сервере' });
       }
     });
 };
@@ -36,18 +43,18 @@ module.exports.deleteCardById = (req, res) => {
         throw new Error('forbidden');
       } else {
         card.remove();
-        res.status(200).send({ message: 'Пост удалён' });
+        res.send({ message: 'Пост удалён' });
       }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Не валидный id', ...err });
+        res.status(STATUS_BAD_REQUEST).send({ message: 'Не валидный id' });
       } else if (err.message === 'not found') {
-        res.status(404).send({ message: 'Карточка с указанным id не найдена' });
+        res.status(STATUS_NOT_FOUND).send({ message: 'Карточка с указанным id не найдена' });
       } else if (err.message === 'forbidden') {
-        res.status(403).send({ message: 'Можно удалять только собственные посты' });
+        res.status(STATUS_FORBIDDEN).send({ message: 'Можно удалять только собственные посты' });
       } else {
-        res.status(500).send({ message: 'Ошибка на сервере' });
+        res.status(STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Ошибка на сервере' });
       }
     });
 };
@@ -62,15 +69,15 @@ module.exports.likeCard = (req, res) => {
       if (!card) {
         throw new Error('not found');
       }
-      res.status(200).send(card);
+      res.send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Не валидный id', ...err });
+        res.status(STATUS_BAD_REQUEST).send({ message: 'Не валидный id' });
       } else if (err.message === 'not found') {
-        res.status(404).send({ message: 'Карточка с указанным id не найдена' });
+        res.status(STATUS_NOT_FOUND).send({ message: 'Карточка с указанным id не найдена' });
       } else {
-        res.status(500).send({ message: 'Ошибка на сервере' });
+        res.status(STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Ошибка на сервере' });
       }
     });
 };
@@ -85,15 +92,15 @@ module.exports.dislikeCard = (req, res) => {
       if (!card) {
         throw new Error('not found');
       }
-      res.status(200).send(card);
+      res.send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Не валидный id', ...err });
+        res.status(STATUS_BAD_REQUEST).send({ message: 'Не валидный id' });
       } else if (err.message === 'not found') {
-        res.status(404).send({ message: 'Карточка с указанным id не найдена' });
+        res.status(STATUS_NOT_FOUND).send({ message: 'Карточка с указанным id не найдена' });
       } else {
-        res.status(500).send({ message: 'Ошибка на сервере' });
+        res.status(STATUS_INTERNAL_SERVER_ERROR).send({ message: 'Ошибка на сервере' });
       }
     });
 };
