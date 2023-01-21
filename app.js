@@ -16,15 +16,6 @@ app.use(bodyParser.json());
 
 mongoose.connect('mongodb://127.0.0.1/mestodb');
 
-// удалить код ниже
-app.use((req, res, next) => {
-  req.user = {
-    _id: '63c93ad90bc510fee9b481f6',
-  };
-
-  next();
-});
-
 app.use(routerUsers);
 app.use(routerCards);
 
