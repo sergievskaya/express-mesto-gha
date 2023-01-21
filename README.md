@@ -16,6 +16,6 @@
 `npm run dev` — запускает сервер с hot-reload
 
 
-## Ссылка на gh-pages:
+## Ссылка на проект:
 
 https://sergievskaya.github.io/express-mesto-gha/
