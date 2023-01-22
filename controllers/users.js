@@ -59,7 +59,14 @@ module.exports.createUser = (req, res, next) => {
       name, about, avatar, email, password: hash,
     }))
     .then((user) => {
-      res.status(STATUS_CREATED).send(user);
+      res
+        .status(STATUS_CREATED)
+        .send({
+          name: user.name,
+          about: user.about,
+          avatar: user.avatar,
+          email: user.email,
+        });
     })
     .catch((err) => {
       if (err.code === 11000) {
@@ -141,7 +148,7 @@ module.exports.login = (req, res, next) => {
         NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
         { expiresIn: '7d' },
       );
-      res.send(token);
+      res.send({ token });
     })
     .catch(next);
 };
