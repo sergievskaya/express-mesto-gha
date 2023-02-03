@@ -8,6 +8,7 @@ const routerUsers = require('./routes/users');
 const routerCards = require('./routes/cards');
 const errorHandler = require('./middlewares/error-handler');
 const NotFoundError = require('./errors/not-found-error');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 require('dotenv').config();
 
 const {
@@ -32,12 +33,16 @@ app.use(bodyParser.json());
 
 mongoose.connect(MONGO_URL);
 
+app.use(requestLogger);
+
 app.use(routerUsers);
 app.use(routerCards);
 
 app.use('*', () => {
   throw new NotFoundError('Ресурс не найден. Проверьте URL и метод запроса');
 });
+
+app.use(errorLogger);
 
 app.use(errors());
 
